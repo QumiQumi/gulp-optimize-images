@@ -1,0 +1,15 @@
+{
+	"compilerOptions": {
+		"module": "CommonJS",
+		"noImplicitAny": false,
+		"noEmitOnError": true,
+		"removeComments": false,
+		"sourceMap": true,
+		"target": "es5",
+		// "outFile": "dist/index.js",
+		"outDir": "dist",
+		"types": [ "node" ],
+	},
+	"include": ["src/**/*"],
+
+}

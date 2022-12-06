@@ -1,0 +1,20 @@
+{
+  "name": "sharp-optimize-images",
+  "version": "1.0.0",
+  "description": "Compress and resize images using gulp and sharp.",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc --build",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {},
+  "devDependencies": {
+    "@types/node": "^18.11.11",
+    "sharp": "^0.31.2",
+    "through2": "^4.0.2",
+    "typescript": "^4.9.3",
+    "vinyl": "^3.0.0"
+  }
+}
