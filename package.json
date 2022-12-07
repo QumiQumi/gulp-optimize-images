@@ -1,5 +1,5 @@
 {
-  "name": "sharp-optimize-images",
+  "name": "gulp-optimize-images",
   "version": "1.0.3",
   "description": "Compress and resize images using gulp and sharp.",
   "main": "dist/index.js",
@@ -14,7 +14,7 @@
   "license": "ISC",
   "repository": {
     "type": "git",
-    "url": "https://github.com/QumiQumi/sharp-optimize"
+    "url": "https://github.com/QumiQumi/gulp-optimize-images"
   },
   "keywords": [
     "gulp",

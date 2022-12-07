@@ -1,4 +1,4 @@
-# Sharp optimize images for [gulp](http://gulpjs.com)
+# [gulp](http://gulpjs.com)-optimize-images 
 
 > Generates images at different sizes <br>
 > Optimize images with given options
