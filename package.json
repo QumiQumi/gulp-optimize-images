@@ -16,7 +16,7 @@
     "type": "git",
     "url": "https://github.com/QumiQumi/sharp-optimize"
   },
-  "dependencies": {},
+  "keywords": ["gulp", "sharp", "responsive", "images", "compress", "resize"],
   "devDependencies": {
     "@types/node": "^18.11.11",
     "@types/through2": "^2.0.38",
