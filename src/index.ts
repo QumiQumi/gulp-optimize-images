@@ -115,6 +115,9 @@ function optimizeImages(
 			case ".jpeg":
 				sharpInstance = sharpInstance.jpeg(compressOptions.jpeg);
 				break;
+			case ".webp":
+				sharpInstance = sharpInstance.webp(compressOptions.webp);
+				break;
 			case ".tiff":
 				sharpInstance = sharpInstance.tiff(compressOptions.tiff);
 				break;
