@@ -1,12 +1,12 @@
-const through = require("through2");
-const Vinyl = require("vinyl");
-const sharp = require("sharp");
-const path = require("path");
+import through = require("through2");
+import Vinyl = require("vinyl");
+import sharp = require("sharp");
+import path = require("path");
 
 type Sizes = number[];
 
 // https://sharp.pixelplumbing.com/api-output
-interface CompressOptions {
+class CompressOptions {
 	jpeg?: Object;
 	png?: Object;
 	webp?: Object;
@@ -15,8 +15,6 @@ interface CompressOptions {
 	avif?: Object;
 	heif?: Object;
 }
-
-const IMG_SIZES: Sizes = [360, 720];
 
 const ALLOWED_EXTENTIONS = [
 	".jpeg",
@@ -29,9 +27,22 @@ const ALLOWED_EXTENTIONS = [
 ];
 
 function optimizeImages(
-	compressOptions: CompressOptions = {},
-	sizes: Sizes = IMG_SIZES
+	compressOptions= new CompressOptions(),
+	sizes: Sizes = []
 ) {
+	if (compressOptions instanceof CompressOptions) {
+		throw Error("compressOptions has incorrect structure");
+	}
+	if (!Array.isArray(sizes)) {
+		throw Error("sizes should be an Array");
+	}
+	for (const key in sizes) {
+		if (typeof key !== "number") {
+			throw Error("sizes can contain only numbers");	
+		}
+	}
+	return through.obj(collect);
+
 	async function collect(file, enc, cb) {
 		if (ALLOWED_EXTENTIONS.includes(file.extname)) {
 			const resizedArray = await resize(file);
@@ -50,36 +61,37 @@ function optimizeImages(
 		return cb();
 	}
 
-	return through.obj(collect);
-
 	async function resize(file) {
 		const imagesArray = [file];
-		const sharpInstance = sharp(file.contents);
-		const meta = await sharpInstance.metadata();
-		const width = meta.width;
-		const imgSizes = sizes.filter((size) => size < width);
-		for (const size of imgSizes) {
-			const buffer = await sharpInstance
-				.clone()
-				.resize({
-					withoutEnlargement: true,
-					width: size,
-				})
-				.toBuffer();
-			const parsesPath = path.parse(file.path);
-			const newPath = path.format({
-				dir: parsesPath.dir,
-				name: parsesPath.name + "-" + size,
-				ext: parsesPath.ext,
-			});
-			imagesArray.push(
-				toVinyl(buffer, {
-					cwd: file.cwd,
-					base: file.base,
-					path: newPath,
-				})
-			);
+		if (sizes.length) {
+			const sharpInstance = sharp(file.contents);
+			const meta = await sharpInstance.metadata();
+			const width = meta.width;
+			const imgSizes = sizes.filter((size) => size < width);
+			for (const size of imgSizes) {
+				const buffer = await sharpInstance
+					.clone()
+					.resize({
+						withoutEnlargement: true,
+						width: size,
+					})
+					.toBuffer();
+				const parsesPath = path.parse(file.path);
+				const newPath = path.format({
+					dir: parsesPath.dir,
+					name: parsesPath.name + "-" + size,
+					ext: parsesPath.ext,
+				});
+				imagesArray.push(
+					toVinyl(buffer, {
+						cwd: file.cwd,
+						base: file.base,
+						path: newPath,
+					})
+				);
+			}
 		}
+
 		return imagesArray;
 	}
 	async function compress(file) {
@@ -87,6 +99,8 @@ function optimizeImages(
 		try {
 			sharpInstance = sharp(file.contents, { animated: true });
 		} catch (error) {
+			console.warn(Error);
+			console.warn("Copy this file...");
 			return false;
 		}
 

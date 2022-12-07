@@ -5,20 +5,22 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc --build",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": ""
   },
   "author": {
-	"name": "Gleb Vidyakin",
+    "name": "Gleb Vidyakin",
     "url": "https://github.com/QumiQumi/"
   },
   "license": "ISC",
-	"repository": {
-	  "type": "git",
-	  "url": "https://github.com/QumiQumi/sharp-optimize"
-	},
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/QumiQumi/sharp-optimize"
+  },
   "dependencies": {},
   "devDependencies": {
     "@types/node": "^18.11.11",
+    "@types/through2": "^2.0.38",
+    "@types/vinyl": "^2.0.7",
     "sharp": "^0.31.2",
     "through2": "^4.0.2",
     "typescript": "^4.9.3",

@@ -1,3 +1,4 @@
+"use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -34,11 +35,17 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
+Object.defineProperty(exports, "__esModule", { value: true });
 var through = require("through2");
 var Vinyl = require("vinyl");
 var sharp = require("sharp");
 var path = require("path");
-var IMG_SIZES = [360, 720];
+// https://sharp.pixelplumbing.com/api-output
+var CompressOptions = /** @class */ (function () {
+    function CompressOptions() {
+    }
+    return CompressOptions;
+}());
 var ALLOWED_EXTENTIONS = [
     ".jpeg",
     ".jpg",
@@ -49,8 +56,20 @@ var ALLOWED_EXTENTIONS = [
     ".avif",
 ];
 function optimizeImages(compressOptions, sizes) {
-    if (compressOptions === void 0) { compressOptions = {}; }
-    if (sizes === void 0) { sizes = IMG_SIZES; }
+    if (compressOptions === void 0) { compressOptions = new CompressOptions(); }
+    if (sizes === void 0) { sizes = []; }
+    if (compressOptions instanceof CompressOptions) {
+        throw Error("compressOptions has incorrect structure");
+    }
+    if (!Array.isArray(sizes)) {
+        throw Error("sizes should be an Array");
+    }
+    for (var key in sizes) {
+        if (typeof key !== "number") {
+            throw Error("sizes can contain only numbers");
+        }
+    }
+    return through.obj(collect);
     function collect(file, enc, cb) {
         return __awaiter(this, void 0, void 0, function () {
             var resizedArray, _i, resizedArray_1, resizedImage, compressedFile;
@@ -88,20 +107,20 @@ function optimizeImages(compressOptions, sizes) {
             });
         });
     }
-    return through.obj(collect);
     function resize(file) {
         return __awaiter(this, void 0, void 0, function () {
-            var imagesArray, sharpInstance, meta, width, imgSizes, _i, imgSizes_1, size, buffer, parsesPath, newPath;
+            var imagesArray, sharpInstance, meta, width_1, imgSizes, _i, imgSizes_1, size, buffer, parsesPath, newPath;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
                         imagesArray = [file];
+                        if (!sizes.length) return [3 /*break*/, 5];
                         sharpInstance = sharp(file.contents);
                         return [4 /*yield*/, sharpInstance.metadata()];
                     case 1:
                         meta = _a.sent();
-                        width = meta.width;
-                        imgSizes = sizes.filter(function (size) { return size < width; });
+                        width_1 = meta.width;
+                        imgSizes = sizes.filter(function (size) { return size < width_1; });
                         _i = 0, imgSizes_1 = imgSizes;
                         _a.label = 2;
                     case 2:
@@ -146,6 +165,8 @@ function optimizeImages(compressOptions, sizes) {
                             sharpInstance = sharp(file.contents, { animated: true });
                         }
                         catch (error) {
+                            console.warn(Error);
+                            console.warn("Copy this file...");
                             return [2 /*return*/, false];
                         }
                         switch (file.extname) {
