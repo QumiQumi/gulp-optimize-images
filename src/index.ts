@@ -36,7 +36,7 @@ function optimizeImages(
 	if (!Array.isArray(sizes)) {
 		throw Error("sizes should be an Array");
 	}
-	for (const key in sizes) {
+	for (const key of sizes) {
 		if (typeof key !== "number") {
 			throw Error("sizes can contain only numbers");	
 		}

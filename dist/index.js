@@ -64,7 +64,8 @@ function optimizeImages(compressOptions, sizes) {
     if (!Array.isArray(sizes)) {
         throw Error("sizes should be an Array");
     }
-    for (var key in sizes) {
+    for (var _i = 0, sizes_1 = sizes; _i < sizes_1.length; _i++) {
+        var key = sizes_1[_i];
         if (typeof key !== "number") {
             throw Error("sizes can contain only numbers");
         }
