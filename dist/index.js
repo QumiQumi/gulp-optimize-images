@@ -101,7 +101,7 @@ function optimizeImages(compressOptions, sizes) {
                         return [3 /*break*/, 2];
                     case 5: return [3 /*break*/, 7];
                     case 6:
-                        console.warn("Extention ".concat(file.extname, " is not allowed. Copy file ").concat(file.path));
+                        console.warn("Extention ".concat(file.extname, " is not processed. Copy file ").concat(file.path));
                         this.push(file);
                         _a.label = 7;
                     case 7: return [2 /*return*/, cb()];

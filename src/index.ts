@@ -56,14 +56,14 @@ function optimizeImages(
 			}
 		} else {
 			console.warn(
-				`Extention ${file.extname} is not allowed. Copy file ${file.path}`
+				`Extention ${file.extname} is not processed. Copy file ${file.path}`
 			);
 			this.push(file);
 		}
 
 		return cb();
 	}
-	
+
 	async function resize(file) {
 		const imagesArray = [file];
 		if (sizes.length) {
