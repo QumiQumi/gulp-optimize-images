@@ -1,6 +1,6 @@
 {
   "name": "gulp-optimize-images",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Compress and resize images using gulp and sharp.",
   "main": "dist/index.js",
   "scripts": {
