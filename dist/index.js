@@ -101,6 +101,7 @@ function optimizeImages(compressOptions, sizes) {
                         return [3 /*break*/, 2];
                     case 5: return [3 /*break*/, 7];
                     case 6:
+                        console.warn("Extention ".concat(file.extname, " is not allowed. Copy file ").concat(file.path));
                         this.push(file);
                         _a.label = 7;
                     case 7: return [2 /*return*/, cb()];
@@ -116,7 +117,8 @@ function optimizeImages(compressOptions, sizes) {
                     case 0:
                         imagesArray = [file];
                         if (!sizes.length) return [3 /*break*/, 5];
-                        sharpInstance = sharp(file.contents, { animated: true });
+                        sharpInstance = createSharpInstance(file);
+                        if (!sharpInstance) return [3 /*break*/, 5];
                         return [4 /*yield*/, sharpInstance.metadata()];
                     case 1:
                         meta = _a.sent();
@@ -162,14 +164,8 @@ function optimizeImages(compressOptions, sizes) {
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        try {
-                            sharpInstance = sharp(file.contents, { animated: true });
-                        }
-                        catch (error) {
-                            console.warn(Error);
-                            console.warn("Copy this file...");
-                            return [2 /*return*/, false];
-                        }
+                        sharpInstance = createSharpInstance(file);
+                        if (!sharpInstance) return [3 /*break*/, 2];
                         switch (file.extname) {
                             case ".gif":
                                 sharpInstance = sharpInstance.gif(compressOptions.gif);
@@ -200,6 +196,7 @@ function optimizeImages(compressOptions, sizes) {
                     case 1:
                         buffer = _a.sent();
                         return [2 /*return*/, toVinyl(buffer, file)];
+                    case 2: return [2 /*return*/, false];
                 }
             });
         });
@@ -211,6 +208,15 @@ function optimizeImages(compressOptions, sizes) {
             path: file.path,
             contents: buffer,
         });
+    }
+    function createSharpInstance(file) {
+        try {
+            return sharp(file.contents, { animated: true });
+        }
+        catch (error) {
+            console.warn(error);
+            return undefined;
+        }
     }
 }
 module.exports = optimizeImages;
