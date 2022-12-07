@@ -44,21 +44,23 @@ function optimizeImages(
 	return through.obj(collect);
 
 	async function collect(file, enc, cb) {
-		if (ALLOWED_EXTENTIONS.includes(file.extname)) {
-			const resizedArray = await resize(file);
-			for (const resizedImage of resizedArray) {
-				const compressedFile = await compress(resizedImage);
-				if (compressedFile) {
-					this.push(compressedFile);
-				} else {
-					this.push(file);
+		if (!file.isDirectory() && !file.isNull()) {
+			if (ALLOWED_EXTENTIONS.includes(file.extname)) {
+				const resizedArray = await resize(file);
+				for (const resizedImage of resizedArray) {
+					const compressedFile = await compress(resizedImage);
+					if (compressedFile) {
+						this.push(compressedFile);
+					} else {
+						this.push(file);
+					}
 				}
+			} else {
+				console.warn(
+					`Extention ${file.extname} is not processed. Copy file ${file.relative}`
+				);
+				this.push(file);
 			}
-		} else {
-			console.warn(
-				`Extention ${file.extname} is not processed. Copy file ${file.path}`
-			);
-			this.push(file);
 		}
 
 		return cb();

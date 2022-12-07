@@ -77,6 +77,7 @@ function optimizeImages(compressOptions, sizes) {
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
+                        if (!(!file.isDirectory() && !file.isNull())) return [3 /*break*/, 7];
                         if (!ALLOWED_EXTENTIONS.includes(file.extname)) return [3 /*break*/, 6];
                         return [4 /*yield*/, resize(file)];
                     case 1:
@@ -101,7 +102,7 @@ function optimizeImages(compressOptions, sizes) {
                         return [3 /*break*/, 2];
                     case 5: return [3 /*break*/, 7];
                     case 6:
-                        console.warn("Extention ".concat(file.extname, " is not processed. Copy file ").concat(file.path));
+                        console.warn("Extention ".concat(file.extname, " is not processed. Copy file ").concat(file.relative));
                         this.push(file);
                         _a.label = 7;
                     case 7: return [2 /*return*/, cb()];
