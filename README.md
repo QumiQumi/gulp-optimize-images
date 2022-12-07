@@ -19,14 +19,18 @@ $ npm install --save-dev gulp-optimize-image
 const { dest, series, src } =require("gulp");
 const optimizeImages =require("../dist/index");
 
-const SRC_DIR = "src";
-const DEST_DIR = "dest";
+const srcDir = "src";
+const destDir = "dest";
 
 
-const IMG_SIZES = [360, 720];
+const sizes = [360, 720];
 
+// https://sharp.pixelplumbing.com/api-constructor
+const sharpOptions = {
+	limitInputPixels: false
+}
 // https://sharp.pixelplumbing.com/api-output
-const IMG_COMPRESS_OPTIONS = {
+const compressOptions = {
     jpeg: {
         quality: 80,
         progressive: true,
@@ -42,9 +46,13 @@ const IMG_COMPRESS_OPTIONS = {
 };
 
 function sharpImages() {
-    return src(SRC_DIR + "/**/*")
-        .pipe(optimizeImages(IMG_COMPRESS_OPTIONS, IMG_SIZES))
-        .pipe(dest(DEST_DIR));
+    return src(srcDir + "/**/*")
+        .pipe(optimizeImages({
+			sharpOptions,
+			compressOptions,
+			sizes
+		}))
+        .pipe(dest(destDir));
 }
 exports.default = series(sharpImages);
 
