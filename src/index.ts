@@ -64,7 +64,7 @@ function optimizeImages(
 	async function resize(file) {
 		const imagesArray = [file];
 		if (sizes.length) {
-			const sharpInstance = sharp(file.contents);
+			const sharpInstance = sharp(file.contents , { animated: true });
 			const meta = await sharpInstance.metadata();
 			const width = meta.width;
 			const imgSizes = sizes.filter((size) => size < width);

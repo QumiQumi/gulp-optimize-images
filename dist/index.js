@@ -116,7 +116,7 @@ function optimizeImages(compressOptions, sizes) {
                     case 0:
                         imagesArray = [file];
                         if (!sizes.length) return [3 /*break*/, 5];
-                        sharpInstance = sharp(file.contents);
+                        sharpInstance = sharp(file.contents, { animated: true });
                         return [4 /*yield*/, sharpInstance.metadata()];
                     case 1:
                         meta = _a.sent();
