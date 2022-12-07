@@ -1,4 +1,15 @@
 "use strict";
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -55,57 +66,63 @@ var ALLOWED_EXTENTIONS = [
     ".webp",
     ".avif",
 ];
-function optimizeImages(compressOptions, sizes) {
-    if (compressOptions === void 0) { compressOptions = new CompressOptions(); }
-    if (sizes === void 0) { sizes = []; }
-    if (compressOptions instanceof CompressOptions) {
+var consoleColorWarn = "\x1b[33m";
+var consoleColorError = "\x1b[31m";
+function optimizeImages(options) {
+    var compressOptions = options.compressOptions || {};
+    var sizes = options.sizes || [];
+    var sharpOptions = options.sharpOptions || {};
+    if (typeof compressOptions !== "object") {
         throw Error("compressOptions has incorrect structure");
     }
     if (!Array.isArray(sizes)) {
         throw Error("sizes should be an Array");
     }
     for (var _i = 0, sizes_1 = sizes; _i < sizes_1.length; _i++) {
-        var key = sizes_1[_i];
-        if (typeof key !== "number") {
+        var size = sizes_1[_i];
+        if (typeof size !== "number") {
             throw Error("sizes can contain only numbers");
         }
     }
     return through.obj(collect);
     function collect(file, enc, cb) {
         return __awaiter(this, void 0, void 0, function () {
-            var resizedArray, _i, resizedArray_1, resizedImage, compressedFile;
+            var resizedArray, _i, resizedArray_1, resizedImage, compressedFile, error_1;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        if (!(!file.isDirectory() && !file.isNull())) return [3 /*break*/, 7];
-                        if (!ALLOWED_EXTENTIONS.includes(file.extname)) return [3 /*break*/, 6];
+                        if (!(!file.isDirectory() && !file.isNull())) return [3 /*break*/, 9];
+                        if (!ALLOWED_EXTENTIONS.includes(file.extname)) return [3 /*break*/, 8];
                         return [4 /*yield*/, resize(file)];
                     case 1:
                         resizedArray = _a.sent();
                         _i = 0, resizedArray_1 = resizedArray;
                         _a.label = 2;
                     case 2:
-                        if (!(_i < resizedArray_1.length)) return [3 /*break*/, 5];
+                        if (!(_i < resizedArray_1.length)) return [3 /*break*/, 7];
                         resizedImage = resizedArray_1[_i];
-                        return [4 /*yield*/, compress(resizedImage)];
+                        _a.label = 3;
                     case 3:
-                        compressedFile = _a.sent();
-                        if (compressedFile) {
-                            this.push(compressedFile);
-                        }
-                        else {
-                            this.push(file);
-                        }
-                        _a.label = 4;
+                        _a.trys.push([3, 5, , 6]);
+                        return [4 /*yield*/, compress(resizedImage)];
                     case 4:
+                        compressedFile = _a.sent();
+                        this.push(compressedFile);
+                        return [3 /*break*/, 6];
+                    case 5:
+                        error_1 = _a.sent();
+                        console.error(consoleColorError, "".concat(error_1, " at file ").concat(file.relative, ". Copy file."));
+                        this.push(file);
+                        return [3 /*break*/, 6];
+                    case 6:
                         _i++;
                         return [3 /*break*/, 2];
-                    case 5: return [3 /*break*/, 7];
-                    case 6:
-                        console.warn("Extention ".concat(file.extname, " is not processed. Copy file ").concat(file.relative));
+                    case 7: return [3 /*break*/, 9];
+                    case 8:
+                        console.warn(consoleColorWarn, "Extention ".concat(file.extname, " is not processed. Copy file ").concat(file.relative));
                         this.push(file);
-                        _a.label = 7;
-                    case 7: return [2 /*return*/, cb()];
+                        _a.label = 9;
+                    case 9: return [2 /*return*/, cb()];
                 }
             });
         });
@@ -117,9 +134,8 @@ function optimizeImages(compressOptions, sizes) {
                 switch (_a.label) {
                     case 0:
                         imagesArray = [file];
-                        if (!sizes.length) return [3 /*break*/, 5];
+                        if (!(sizes === null || sizes === void 0 ? void 0 : sizes.length)) return [3 /*break*/, 5];
                         sharpInstance = createSharpInstance(file);
-                        if (!sharpInstance) return [3 /*break*/, 5];
                         return [4 /*yield*/, sharpInstance.metadata()];
                     case 1:
                         meta = _a.sent();
@@ -166,7 +182,6 @@ function optimizeImages(compressOptions, sizes) {
                 switch (_a.label) {
                     case 0:
                         sharpInstance = createSharpInstance(file);
-                        if (!sharpInstance) return [3 /*break*/, 2];
                         switch (file.extname) {
                             case ".gif":
                                 sharpInstance = sharpInstance.gif(compressOptions.gif);
@@ -197,7 +212,6 @@ function optimizeImages(compressOptions, sizes) {
                     case 1:
                         buffer = _a.sent();
                         return [2 /*return*/, toVinyl(buffer, file)];
-                    case 2: return [2 /*return*/, false];
                 }
             });
         });
@@ -211,13 +225,7 @@ function optimizeImages(compressOptions, sizes) {
         });
     }
     function createSharpInstance(file) {
-        try {
-            return sharp(file.contents, { animated: true });
-        }
-        catch (error) {
-            console.warn(error);
-            return undefined;
-        }
+        return sharp(file.contents, __assign({ animated: true }, sharpOptions));
     }
 }
 module.exports = optimizeImages;

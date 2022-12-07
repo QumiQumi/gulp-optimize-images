@@ -52,10 +52,17 @@ exports.default = series(sharpImages);
 
 ## API
 
-### responsive([compressOptions?](#compressOptions), [sizes?](#sizes))
+### responsive([options])
 
-#### compressOptions
+##### options.sharpOptions
+Type: `Object`
+Default: `{}` - Merged with default sharp constructor options
+
+Sharp options available on https://sharp.pixelplumbing.com/api-constructor 
+##### options.compressOptions
+
 Type: `Object` 
+Default: `{}` - Merged with default sharp image options
 ```ts
 const compressOptions = {
 	jpeg?: Object;
@@ -68,11 +75,12 @@ const compressOptions = {
 }
 ```
 Object containing options for each image format. <br>
-Available formats available in https://sharp.pixelplumbing.com/api-output. <br>
+Available formats available on https://sharp.pixelplumbing.com/api-output. <br>
 If not provided uses default sharp settings
 
-#### sizes
+##### options.sizes
 Type: `number[]` 
+Default: `[]`
 
 Number array of width sizes. If provided, outputs images in this sizes including original size.
 

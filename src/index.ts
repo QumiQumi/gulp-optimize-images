@@ -15,7 +15,11 @@ class CompressOptions {
 	avif?: Object;
 	heif?: Object;
 }
-
+interface Options{
+	sharpOptions: Object
+	compressOptions: CompressOptions,
+	sizes: Sizes,
+}
 const ALLOWED_EXTENTIONS = [
 	".jpeg",
 	".jpg",
@@ -25,19 +29,21 @@ const ALLOWED_EXTENTIONS = [
 	".webp",
 	".avif",
 ];
+const consoleColorWarn = "\x1b[33m";
+const consoleColorError = "\x1b[31m";
+function optimizeImages(options:Options) {
+	const compressOptions = options.compressOptions || {};
+	const sizes = options.sizes || [];
+	const sharpOptions = options.sharpOptions || {};
 
-function optimizeImages(
-	compressOptions = new CompressOptions(),
-	sizes: Sizes = []
-) {
-	if (compressOptions instanceof CompressOptions) {
+	if (typeof compressOptions !== "object") {
 		throw Error("compressOptions has incorrect structure");
 	}
 	if (!Array.isArray(sizes)) {
 		throw Error("sizes should be an Array");
 	}
-	for (const key of sizes) {
-		if (typeof key !== "number") {
+	for (const size of sizes) {
+		if (typeof size !== "number") {
 			throw Error("sizes can contain only numbers");
 		}
 	}
@@ -48,15 +54,20 @@ function optimizeImages(
 			if (ALLOWED_EXTENTIONS.includes(file.extname)) {
 				const resizedArray = await resize(file);
 				for (const resizedImage of resizedArray) {
-					const compressedFile = await compress(resizedImage);
-					if (compressedFile) {
+					try {
+						const compressedFile = await compress(resizedImage);
 						this.push(compressedFile);
-					} else {
+					} catch (error) {
+						console.error(
+							consoleColorError,
+							`${error} at file ${file.relative}. Copy file.`
+						);
 						this.push(file);
 					}
 				}
 			} else {
 				console.warn(
+					consoleColorWarn,
 					`Extention ${file.extname} is not processed. Copy file ${file.relative}`
 				);
 				this.push(file);
@@ -68,34 +79,32 @@ function optimizeImages(
 
 	async function resize(file) {
 		const imagesArray = [file];
-		if (sizes.length) {
+		if (sizes?.length) {
 			const sharpInstance = createSharpInstance(file);
-			if (sharpInstance) {
-				const meta = await sharpInstance.metadata();
-				const width = meta.width;
-				const imgSizes = sizes.filter((size) => size < width);
-				for (const size of imgSizes) {
-					const buffer = await sharpInstance
-						.clone()
-						.resize({
-							withoutEnlargement: true,
-							width: size,
-						})
-						.toBuffer();
-					const parsesPath = path.parse(file.path);
-					const newPath = path.format({
-						dir: parsesPath.dir,
-						name: parsesPath.name + "-" + size,
-						ext: parsesPath.ext,
-					});
-					imagesArray.push(
-						toVinyl(buffer, {
-							cwd: file.cwd,
-							base: file.base,
-							path: newPath,
-						})
-					);
-				}
+			const meta = await sharpInstance.metadata();
+			const width = meta.width;
+			const imgSizes = sizes.filter((size) => size < width);
+			for (const size of imgSizes) {
+				const buffer = await sharpInstance
+					.clone()
+					.resize({
+						withoutEnlargement: true,
+						width: size,
+					})
+					.toBuffer();
+				const parsesPath = path.parse(file.path);
+				const newPath = path.format({
+					dir: parsesPath.dir,
+					name: parsesPath.name + "-" + size,
+					ext: parsesPath.ext,
+				});
+				imagesArray.push(
+					toVinyl(buffer, {
+						cwd: file.cwd,
+						base: file.base,
+						path: newPath,
+					})
+				);
 			}
 		}
 
@@ -103,38 +112,34 @@ function optimizeImages(
 	}
 	async function compress(file) {
 		let sharpInstance = createSharpInstance(file);
-		if (sharpInstance) {
-			switch (file.extname) {
-				case ".gif":
-					sharpInstance = sharpInstance.gif(compressOptions.gif);
-					break;
-				case ".png":
-					sharpInstance = sharpInstance.png(compressOptions.png);
-					break;
-				case ".jpg":
-				case ".jpeg":
-					sharpInstance = sharpInstance.jpeg(compressOptions.jpeg);
-					break;
-				case ".webp":
-					sharpInstance = sharpInstance.webp(compressOptions.webp);
-					break;
-				case ".tiff":
-					sharpInstance = sharpInstance.tiff(compressOptions.tiff);
-					break;
-				case ".avif":
-					sharpInstance = sharpInstance.avif(compressOptions.avif);
-					break;
-				case ".heif":
-					sharpInstance = sharpInstance.heif(compressOptions.heif);
-					break;
-				default:
-					return false;
-			}
-			const buffer = await sharpInstance.toBuffer();
-			return toVinyl(buffer, file);
-		} else {
-			return false;
+		switch (file.extname) {
+			case ".gif":
+				sharpInstance = sharpInstance.gif(compressOptions.gif);
+				break;
+			case ".png":
+				sharpInstance = sharpInstance.png(compressOptions.png);
+				break;
+			case ".jpg":
+			case ".jpeg":
+				sharpInstance = sharpInstance.jpeg(compressOptions.jpeg);
+				break;
+			case ".webp":
+				sharpInstance = sharpInstance.webp(compressOptions.webp);
+				break;
+			case ".tiff":
+				sharpInstance = sharpInstance.tiff(compressOptions.tiff);
+				break;
+			case ".avif":
+				sharpInstance = sharpInstance.avif(compressOptions.avif);
+				break;
+			case ".heif":
+				sharpInstance = sharpInstance.heif(compressOptions.heif);
+				break;
+			default:
+				return false;
 		}
+		const buffer = await sharpInstance.toBuffer();
+		return toVinyl(buffer, file);
 	}
 	function toVinyl(buffer, file) {
 		return new Vinyl({
@@ -146,12 +151,7 @@ function optimizeImages(
 	}
 
 	function createSharpInstance(file) {
-		try {
-			return sharp(file.contents, { animated: true });
-		} catch (error) {
-			console.warn(error);
-			return undefined;
-		}
+		return sharp(file.contents, { animated: true, ...sharpOptions });
 	}
 }
 module.exports = optimizeImages;
