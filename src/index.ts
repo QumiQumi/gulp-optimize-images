@@ -17,9 +17,9 @@ class CompressOptions {
 	heif?: Object;
 }
 interface Options {
-	sharpOptions: Object;
-	compressOptions: CompressOptions;
-	sizes: Sizes;
+	sharpOptions?: Object;
+	compressOptions?: CompressOptions;
+	sizes?: Sizes;
 }
 const ALLOWED_EXTENTIONS = [
 	".jpeg",
@@ -32,7 +32,7 @@ const ALLOWED_EXTENTIONS = [
 ];
 const consoleColorWarn = "\x1b[33m";
 const consoleColorError = "\x1b[31m";
-function optimizeImages(options: Options): Transform {
+function optimizeImages(options: Options = {}): Transform {
 	const compressOptions = options.compressOptions || {};
 	const sizes = options.sizes || [];
 	const sharpOptions = options.sharpOptions || {};

@@ -11,10 +11,10 @@ declare class CompressOptions {
     heif?: Object;
 }
 interface Options {
-    sharpOptions: Object;
-    compressOptions: CompressOptions;
-    sizes: Sizes;
+    sharpOptions?: Object;
+    compressOptions?: CompressOptions;
+    sizes?: Sizes;
 }
-declare function optimizeImages(options: Options): Transform;
+declare function optimizeImages(options?: Options): Transform;
 export = optimizeImages;
 //# sourceMappingURL=index.d.ts.map

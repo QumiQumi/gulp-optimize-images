@@ -71,6 +71,7 @@ var ALLOWED_EXTENTIONS = [
 var consoleColorWarn = "\x1b[33m";
 var consoleColorError = "\x1b[31m";
 function optimizeImages(options) {
+    if (options === void 0) { options = {}; }
     var compressOptions = options.compressOptions || {};
     var sizes = options.sizes || [];
     var sharpOptions = options.sharpOptions || {};
