@@ -1,15 +1,15 @@
 {
 	"compilerOptions": {
-		"module": "CommonJS",
 		"noImplicitAny": false,
-		"noEmitOnError": true,
-		"removeComments": false,
-		"sourceMap": true,
-		"target": "es5",
-		// "outFile": "dist/index.js",
+		// "noEmitOnError": true,
+		// "removeComments": false,
+		"module": "CommonJS",
+		"esModuleInterop": true,
+		"declaration": true,
 		"outDir": "dist",
-		"types": [ "node" ],
+		"declarationMap": true,
+		"strict": true,
+		"alwaysStrict": true
 	},
-	"include": ["src/**/*"],
-
+	"include": ["src/**/*"]
 }

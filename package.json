@@ -1,38 +1,40 @@
 {
-  "name": "gulp-optimize-images",
-  "version": "1.1.1",
-  "description": "Compress and resize images using gulp and sharp.",
-  "main": "dist/index.js",
-  "scripts": {
-    "build": "tsc --build",
-    "test": ""
-  },
-  "author": {
-    "name": "Gleb Vidyakin",
-    "url": "https://github.com/QumiQumi/"
-  },
-  "license": "ISC",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/QumiQumi/gulp-optimize-images"
-  },
-  "keywords": [
-    "gulp",
-    "sharp",
-    "responsive",
-    "images",
-    "compress",
-    "resize"
-  ],
-  "dependencies": {
-    "sharp": "^0.31.2",
-    "through2": "^4.0.2",
-    "vinyl": "^3.0.0"
-  },
-  "devDependencies": {
-    "typescript": "^4.9.3",
-    "@types/node": "^18.11.11",
-    "@types/through2": "^2.0.38",
-    "@types/vinyl": "^2.0.7"
-  }
+	"name": "gulp-optimize-images",
+	"version": "1.1.1",
+	"description": "Compress and resize images using gulp and sharp.",
+	"main": "dist/index.js",
+	"scripts": {
+		"build": "npm run clean && tsc",
+		"clean": "del-cli --force dist",
+		"test": "cd test && npm run test"
+	},
+	"author": {
+		"name": "Gleb Vidyakin",
+		"url": "https://github.com/QumiQumi/"
+	},
+	"license": "ISC",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/QumiQumi/gulp-optimize-images"
+	},
+	"keywords": [
+		"gulp",
+		"sharp",
+		"responsive",
+		"images",
+		"compress",
+		"resize"
+	],
+	"dependencies": {
+		"sharp": "^0.31.2",
+		"through2": "^4.0.2",
+		"vinyl": "^3.0.0"
+	},
+	"devDependencies": {
+		"@types/node": "^18.11.11",
+		"@types/sharp": "^0.31.0",
+		"@types/through2": "^2.0.38",
+		"@types/vinyl": "^2.0.7",
+		"typescript": "^4.9.3"
+	}
 }

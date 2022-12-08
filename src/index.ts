@@ -1,7 +1,8 @@
-import through = require("through2");
-import Vinyl = require("vinyl");
-import sharp = require("sharp");
-import path = require("path");
+import path from "path";
+import sharp, { Sharp } from "sharp";
+import { Transform } from "stream";
+import through from "through2";
+import Vinyl from "vinyl";
 
 type Sizes = number[];
 
@@ -15,10 +16,10 @@ class CompressOptions {
 	avif?: Object;
 	heif?: Object;
 }
-interface Options{
-	sharpOptions: Object
-	compressOptions: CompressOptions,
-	sizes: Sizes,
+interface Options {
+	sharpOptions: Object;
+	compressOptions: CompressOptions;
+	sizes: Sizes;
 }
 const ALLOWED_EXTENTIONS = [
 	".jpeg",
@@ -31,7 +32,7 @@ const ALLOWED_EXTENTIONS = [
 ];
 const consoleColorWarn = "\x1b[33m";
 const consoleColorError = "\x1b[31m";
-function optimizeImages(options:Options) {
+function optimizeImages(options: Options): Transform {
 	const compressOptions = options.compressOptions || {};
 	const sizes = options.sizes || [];
 	const sharpOptions = options.sharpOptions || {};
@@ -47,9 +48,7 @@ function optimizeImages(options:Options) {
 			throw Error("sizes can contain only numbers");
 		}
 	}
-	return through.obj(collect);
-
-	async function collect(file, enc, cb) {
+	return through.obj(async function (file: Vinyl.BufferFile, enc, cb) {
 		if (!file.isDirectory() && !file.isNull()) {
 			if (ALLOWED_EXTENTIONS.includes(file.extname)) {
 				const resizedArray = await resize(file);
@@ -75,14 +74,14 @@ function optimizeImages(options:Options) {
 		}
 
 		return cb();
-	}
+	});
 
-	async function resize(file) {
+	async function resize(file: Vinyl.BufferFile) {
 		const imagesArray = [file];
 		if (sizes?.length) {
 			const sharpInstance = createSharpInstance(file);
 			const meta = await sharpInstance.metadata();
-			const width = meta.width;
+			const width = meta.width ?? 0;
 			const imgSizes = sizes.filter((size) => size < width);
 			for (const size of imgSizes) {
 				const buffer = await sharpInstance
@@ -110,7 +109,7 @@ function optimizeImages(options:Options) {
 
 		return imagesArray;
 	}
-	async function compress(file) {
+	async function compress(file: Vinyl.BufferFile) {
 		let sharpInstance = createSharpInstance(file);
 		switch (file.extname) {
 			case ".gif":
@@ -141,7 +140,7 @@ function optimizeImages(options:Options) {
 		const buffer = await sharpInstance.toBuffer();
 		return toVinyl(buffer, file);
 	}
-	function toVinyl(buffer, file) {
+	function toVinyl(buffer: Buffer, file) {
 		return new Vinyl({
 			cwd: file.cwd,
 			base: file.base,
@@ -150,8 +149,8 @@ function optimizeImages(options:Options) {
 		});
 	}
 
-	function createSharpInstance(file) {
+	function createSharpInstance(file: Vinyl.BufferFile): Sharp {
 		return sharp(file.contents, { animated: true, ...sharpOptions });
 	}
 }
-module.exports = optimizeImages;
+export = optimizeImages;

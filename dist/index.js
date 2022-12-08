@@ -46,11 +46,13 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-Object.defineProperty(exports, "__esModule", { value: true });
-var through = require("through2");
-var Vinyl = require("vinyl");
-var sharp = require("sharp");
-var path = require("path");
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+var path_1 = __importDefault(require("path"));
+var sharp_1 = __importDefault(require("sharp"));
+var through2_1 = __importDefault(require("through2"));
+var vinyl_1 = __importDefault(require("vinyl"));
 // https://sharp.pixelplumbing.com/api-output
 var CompressOptions = /** @class */ (function () {
     function CompressOptions() {
@@ -84,8 +86,7 @@ function optimizeImages(options) {
             throw Error("sizes can contain only numbers");
         }
     }
-    return through.obj(collect);
-    function collect(file, enc, cb) {
+    return through2_1["default"].obj(function (file, enc, cb) {
         return __awaiter(this, void 0, void 0, function () {
             var resizedArray, _i, resizedArray_1, resizedImage, compressedFile, error_1;
             return __generator(this, function (_a) {
@@ -126,23 +127,24 @@ function optimizeImages(options) {
                 }
             });
         });
-    }
+    });
     function resize(file) {
+        var _a;
         return __awaiter(this, void 0, void 0, function () {
             var imagesArray, sharpInstance, meta, width_1, imgSizes, _i, imgSizes_1, size, buffer, parsesPath, newPath;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
+            return __generator(this, function (_b) {
+                switch (_b.label) {
                     case 0:
                         imagesArray = [file];
                         if (!(sizes === null || sizes === void 0 ? void 0 : sizes.length)) return [3 /*break*/, 5];
                         sharpInstance = createSharpInstance(file);
                         return [4 /*yield*/, sharpInstance.metadata()];
                     case 1:
-                        meta = _a.sent();
-                        width_1 = meta.width;
+                        meta = _b.sent();
+                        width_1 = (_a = meta.width) !== null && _a !== void 0 ? _a : 0;
                         imgSizes = sizes.filter(function (size) { return size < width_1; });
                         _i = 0, imgSizes_1 = imgSizes;
-                        _a.label = 2;
+                        _b.label = 2;
                     case 2:
                         if (!(_i < imgSizes_1.length)) return [3 /*break*/, 5];
                         size = imgSizes_1[_i];
@@ -150,23 +152,23 @@ function optimizeImages(options) {
                                 .clone()
                                 .resize({
                                 withoutEnlargement: true,
-                                width: size,
+                                width: size
                             })
                                 .toBuffer()];
                     case 3:
-                        buffer = _a.sent();
-                        parsesPath = path.parse(file.path);
-                        newPath = path.format({
+                        buffer = _b.sent();
+                        parsesPath = path_1["default"].parse(file.path);
+                        newPath = path_1["default"].format({
                             dir: parsesPath.dir,
                             name: parsesPath.name + "-" + size,
-                            ext: parsesPath.ext,
+                            ext: parsesPath.ext
                         });
                         imagesArray.push(toVinyl(buffer, {
                             cwd: file.cwd,
                             base: file.base,
-                            path: newPath,
+                            path: newPath
                         }));
-                        _a.label = 4;
+                        _b.label = 4;
                     case 4:
                         _i++;
                         return [3 /*break*/, 2];
@@ -217,16 +219,15 @@ function optimizeImages(options) {
         });
     }
     function toVinyl(buffer, file) {
-        return new Vinyl({
+        return new vinyl_1["default"]({
             cwd: file.cwd,
             base: file.base,
             path: file.path,
-            contents: buffer,
+            contents: buffer
         });
     }
     function createSharpInstance(file) {
-        return sharp(file.contents, __assign({ animated: true }, sharpOptions));
+        return (0, sharp_1["default"])(file.contents, __assign({ animated: true }, sharpOptions));
     }
 }
 module.exports = optimizeImages;
-//# sourceMappingURL=index.js.map
