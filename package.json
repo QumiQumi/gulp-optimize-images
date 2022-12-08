@@ -1,6 +1,6 @@
 {
 	"name": "gulp-optimize-images",
-	"version": "1.1.2",
+	"version": "1.1.1",
 	"description": "Compress and resize images using gulp and sharp.",
 	"main": "dist/index.js",
 	"scripts": {
@@ -25,6 +25,7 @@
 		"compress",
 		"resize"
 	],
+	"types": "./index.d.ts",
 	"dependencies": {
 		"sharp": "^0.31.2",
 		"through2": "^4.0.2",
