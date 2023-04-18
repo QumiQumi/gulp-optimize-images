@@ -16,8 +16,8 @@ $ npm install --save-dev gulp-optimize-image
 ## Usage
 
 ```js
-const { dest, series, src } =require("gulp");
-const optimizeImages =require("../dist/index");
+const { dest, series, src } = require("gulp");
+const optimizeImages = require("gulp-optimize-images");
 
 const srcDir = "src";
 const destDir = "dest";
